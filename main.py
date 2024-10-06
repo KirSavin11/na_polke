@@ -1,38 +1,26 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
 import os
+from telegram import Update, LabeledPrice
+from telegram.ext import Application, ApplicationBuilder, CommandHandler, MessageHandler, filters, PreCheckoutQueryHandler, ContextTypes
 from dotenv import load_dotenv
+from bot_commands import start, get_catalog, help_command
+
 
 load_dotenv()
-Base = declarative_base()  # базовый класс для создания моделей
-
-engine = create_engine(os.getenv('DATABASE_URL'))
-Session = sessionmaker(bind=engine)
-session = Session()
+TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
+PAYMENT_PROVIDER_TOKEN = os.getenv('PAYMENT_PROVIDER_TOKEN')
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 
-class Item(Base):
-    __tablename__ = 'items'
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False, unique=True)
-    price = Column(Float, nullable=True)
+if __name__ == '__main__':
+    application: Application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 
+    start_handler: CommandHandler = CommandHandler('start', start)
+    application.add_handler(start_handler)
 
-class CartItem(Base):
-    __tablename__ = 'cart_items'
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, nullable=False)
-    item_id = Column(Integer, ForeignKey('items.id'), nullable=False)
-    quantity = Column(Integer, default=1)
-    item = relationship('Item')
+    start_handler: CommandHandler = CommandHandler('catalog', get_catalog)
+    application.add_handler(start_handler)
 
+    start_handler: CommandHandler = CommandHandler('help', help_command)
+    application.add_handler(start_handler)
 
-Base.metadata.create_all(engine)
-
-new_item = Item(name='Sample Item', price=29.99)
-session.add(new_item)
-session.commit()
-
-item = session.query(Item).filter_by(name='Sample Item').first()
-print(item.name, item.price)
+    application.run_polling()
