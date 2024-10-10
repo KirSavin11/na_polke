@@ -13,5 +13,5 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=message,
-            reply_markup=ReplyKeyboardMarkup([['/catalog', '/help']], resize_keyboard=True)
+            reply_markup=ReplyKeyboardMarkup([['/catalog', '/cart_items', '/help']], resize_keyboard=True)
         )

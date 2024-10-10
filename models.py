@@ -1,15 +1,7 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
-import os
-from dotenv import load_dotenv
+from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy.orm import relationship, declarative_base
 
-load_dotenv()
 Base = declarative_base()  # базовый класс для создания моделей
-
-engine = create_engine(os.getenv('DATABASE_URL'))
-Session = sessionmaker(bind=engine)
-session = Session()
 
 
 class Item(Base):
@@ -17,6 +9,9 @@ class Item(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
     price = Column(Float, nullable=True)
+
+    def __repr__(self):
+        return str(self.name)
 
 
 class CartItem(Base):
