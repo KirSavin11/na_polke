@@ -25,8 +25,7 @@ async def add_to_cart(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         else:
             message = ''
-            for item in item_names:
-                message += f'Товар {item} не найден\n'
+            message += f'Товар {item_name} не найден\n'
             await context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=message,
