@@ -7,26 +7,24 @@ from db_connect import session
 
 
 async def add_to_cart(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    item_names = context.args
+    item_names = update.message.text.strip()
 
-    for item_name in item_names:
-        item = session.query(Item).filter_by(name=item_name).first()
-        if item:
-            item_in_cart = session.query(CartItem).filter_by(user_id=update.effective_user.id, item_id=item.id).first()
-            if item_in_cart:
-                item_in_cart.quantity += 1
-            else:
-                item_in_cart = CartItem(user_id=update.effective_chat.id, item_id=item.id)
-                session.add(item_in_cart)
-            session.commit()
-            await context.bot.send_message(
-                chat_id=update.effective_chat.id,
-                text=f'Товар {item.name} добавлен в корзину',
-            )
+    item = session.query(Item).filter_by(name=item_names[13:]).first()
+    if item:
+        item_in_cart = session.query(CartItem).filter_by(user_id=update.effective_user.id, item_id=item.id).first()
+        if item_in_cart:
+            item_in_cart.quantity += 1
         else:
-            message = ''
-            message += f'Товар {item_name} не найден\n'
-            await context.bot.send_message(
-                chat_id=update.effective_chat.id,
-                text=message,
-            )
+            item_in_cart = CartItem(user_id=update.effective_chat.id, item_id=item.id)
+            session.add(item_in_cart)
+        session.commit()
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=f'Товар {item.name} добавлен в корзину',
+        )
+    else:
+        message = f'Товар {item_names[13:]} не найден'
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=message,
+        )
