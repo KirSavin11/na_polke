@@ -1,7 +1,7 @@
 import os
 from telegram.ext import Application, ApplicationBuilder, CommandHandler, MessageHandler, filters, PreCheckoutQueryHandler, ContextTypes
 from dotenv import load_dotenv
-from bot_commands import start, get_catalog, help_command, add_to_cart, view_cart
+from bot_commands import start, get_catalog, help_command, add_to_cart, view_cart, remove_item
 
 
 load_dotenv()
@@ -27,5 +27,8 @@ if __name__ == '__main__':
 
     view_cart_handler: CommandHandler = CommandHandler('cart_items', view_cart)
     application.add_handler(view_cart_handler)
+
+    remove_item_handler: CommandHandler = CommandHandler('remove_item', remove_item)
+    application.add_handler(remove_item_handler)
 
     application.run_polling()

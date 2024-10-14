@@ -7,9 +7,9 @@ from db_connect import session
 
 
 async def add_to_cart(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    item_names = update.message.text.strip()
+    item_name = update.message.text.strip()[13:]
 
-    item = session.query(Item).filter_by(name=item_names[13:]).first()
+    item = session.query(Item).filter_by(name=item_name).first()
     if item:
         item_in_cart = session.query(CartItem).filter_by(user_id=update.effective_user.id, item_id=item.id).first()
         if item_in_cart:
@@ -23,7 +23,7 @@ async def add_to_cart(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=f'Товар {item.name} добавлен в корзину',
         )
     else:
-        message = f'Товар {item_names[13:]} не найден'
+        message = f'Товар {item_name} не найден'
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=message,

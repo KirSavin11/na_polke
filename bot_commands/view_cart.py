@@ -10,7 +10,7 @@ async def view_cart(update: Update, context: ContextTypes.DEFAULT_TYPE):
     cart_items = session.query(CartItem).filter_by(user_id=update.effective_chat.id).all()
     if cart_items:
         for item in cart_items:
-            message = f'{item.name}: {item.price}'
+            message = f'{item.item.name}: {item.quantity} шт.'
     else:
         message = 'The cart is empty now('
     await context.bot.send_message(
