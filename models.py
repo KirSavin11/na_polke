@@ -1,13 +1,17 @@
-from sqlalchemy import Integer, String, Float, ForeignKey
-from sqlalchemy.orm import relationship, declarative_base, Mapped, mapped_column
+from sqlalchemy import Integer, String, Float, ForeignKey, text
+from sqlalchemy.orm import relationship, Mapped, mapped_column, declarative_base
+from db_connect import Category
 
-Base = declarative_base()  # базовый класс для создания моделей
+
+Base = declarative_base()
 
 
 class Item(Base):
     __tablename__ = 'items'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    description: Mapped[str] = mapped_column(String, nullable=True, unique=False)
+    category: Mapped[Category] = mapped_column(default=Category.goods, server_default=text("'goods'"))
     price: Mapped[float] = mapped_column(Float, nullable=True)
 
     def __repr__(self):
@@ -17,7 +21,24 @@ class Item(Base):
 class CartItem(Base):
     __tablename__ = 'cart_items'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    item_id: Mapped[int] = mapped_column(Integer, ForeignKey('items.id'), nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, default=1)
-    item = relationship('Item')
+    item_id: Mapped[int] = mapped_column(ForeignKey('items.id'))
+    item = relationship('Item', uselist=False)
+    customer_id: Mapped[int] = relationship(ForeignKey('customers.id'))
+    customer: Mapped[int] = relationship(
+        'Customer',
+        back_populates='cart_items'
+    )
+
+
+class Customer(Base):
+    __tablename__ = 'customers'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str]
+    second_name: Mapped[str]
+    delivery_address: Mapped[str]
+    cart_items: Mapped[list['CartItem']] = relationship(
+        'CartItem',
+        back_populates='customer',
+        cascade='all, delete-orphan'
+    )
