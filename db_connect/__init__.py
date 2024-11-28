@@ -1,3 +1,3 @@
-from .db_connect import Category, session
+from .db_connect import Category, connection
 
-__all__ = ('Category', 'session')
+__all__ = ('Category', 'connection')

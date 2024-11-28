@@ -18,19 +18,6 @@ class Item(Base):
         return str(self.name)
 
 
-class CartItem(Base):
-    __tablename__ = 'cart_items'
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    quantity: Mapped[int] = mapped_column(Integer, default=1)
-    item_id: Mapped[int] = mapped_column(ForeignKey('items.id'))
-    item = relationship('Item', uselist=False)
-    customer_id: Mapped[int] = relationship(ForeignKey('customers.id'))
-    customer: Mapped[int] = relationship(
-        'Customer',
-        back_populates='cart_items'
-    )
-
-
 class Customer(Base):
     __tablename__ = 'customers'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -41,4 +28,17 @@ class Customer(Base):
         'CartItem',
         back_populates='customer',
         cascade='all, delete-orphan'
+    )
+
+
+class CartItem(Base):
+    __tablename__ = 'cart_items'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    quantity: Mapped[int] = mapped_column(Integer, default=1)
+    item_id: Mapped[int] = mapped_column(ForeignKey('items.id'))
+    item = relationship('Item', uselist=False)
+    customer_id: Mapped[int] = mapped_column(ForeignKey('customers.id'))
+    customer: Mapped[int] = relationship(
+        'Customer',
+        back_populates='cart_items'
     )
